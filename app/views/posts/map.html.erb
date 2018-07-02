@@ -24,15 +24,17 @@
     var cityhall = new naver.maps.LatLng(37.5666805, 126.9784147);
 
 
-    map.setCenter(naver_addr); // 중심 좌표 이동
-    map.setZoom(13);     // 줌 레벨 변경
-
     var data = [
     {name: "아리차이", address: "서울특별시 관악구 신림동길 4", link: "https://store.naver.com/restaurants/detail?id=11704746", x: 126.9282765, y: 37.4876462},
     {name: "한우등촌골", address: "서울특별시 강서구 등촌로 201", link: "https://store.naver.com/restaurants/detail?id=35966485", x:126.86273, y: 37.5476847},
     {name: "수유부추곱창", address: "서울특별시 강북구 도봉로87길 26-21", link: "https://store.naver.com/restaurants/detail?id=37111836", x: 127.0247721, y: 37.6393168},
     {name: "강천민물장어", address:"서울특별시 강동구 올림픽로 834 한강시티라이프", link: "https://store.naver.com/restaurants/detail?id=18905396", x: 127.1297937, y: 37.5553916 }
     ];
+
+
+    map.setCenter(new naver.maps.LatLng(data[0].y,data[0].x)); // 중심 좌표 이동
+    map.setZoom(13);     // 줌 레벨 변경
+
 
     var markers=[];
     var infoWindows=[]
@@ -42,8 +44,15 @@
 
       var marker=new naver.maps.Marker({
         position:new naver.maps.LatLng(restaurant.y,restaurant.x),
-        map:map
-        }
+        map:map,
+        icon: {
+                url: 'https://navermaps.github.io/maps.js/docs'+'/img/example/sally.png',
+                size: new naver.maps.Size(50, 52),  // 보이는 부분만 조정됨
+                origin: new naver.maps.Point(0, 0), //이동하면 이미지를 감싸고 있는 div는 그대로인데 이미지만 이동해서 짤려
+                anchor: new naver.maps.Point(25, 26) //div자체가 이동한다
+              },
+                animation:1  //이미지가 방방뜀 2하면 쿵
+            }
       )
 
       var contentString = [
