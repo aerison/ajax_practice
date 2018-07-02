@@ -11,6 +11,13 @@ class PostsController < ApplicationController
   def map
   end
 
+  def map_data
+      @school =School.all.limit(10)
+      respond_to do |format|
+        format.json{render json:@school} #데이터 주는 것
+      end
+  end
+
   # GET /posts/1
   # GET /posts/1.json
   def show
