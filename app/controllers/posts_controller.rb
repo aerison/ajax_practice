@@ -12,9 +12,25 @@ class PostsController < ApplicationController
   end
 
   def map_data
-      @school =School.all.limit(10)
+      max = JSON.parse(params[:max]) #JSON_string => hash
+      min = JSON.parse(params[:min]) #JSON_string => hash
+      indices=JSON.parse(params[:indices]) #네이버맵에 이미 로딩되어있는 학교들의 id
+      #{y:37.xxx, _lat:... ,x:xxxx, _lon:xxx}
+      #@school =School.all.limit(100)
+      school=School.where("(lat between ? and ?) and (lng between ? and ?)",min["_lat"],max["_lat"],min["_lng"],max["_lng"])
+      #이 인덱스 들의 학교 제외코드
+      school_id = school.map{|x| x.id}
+      school_id -= indices #기존 네이버 맵에 로딩되이있지 않은 학교들의 id 들만 저장
+      if school_id.length == 0
+        school = []
+      else
+        #school_id에 존재하는 학교들만 school에서 빼내주면 됨
+        school = school.select{|x| school_id.include? x.id}
+      end
+
       respond_to do |format|
-        format.json{render json:@school} #데이터 주는 것
+        #format.json{render json:@school} #데이터 주는 것
+        format.json{render json:[school,school_id]} #데이터 주는 것
       end
   end
 

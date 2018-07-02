@@ -26,6 +26,7 @@
 
     var markers=[];
     var infoWindows=[]
+    var indices=[]
 
     // var data = [
     // {name: "아리차이", address: "서울특별시 관악구 신림동길 4", link: "https://store.naver.com/restaurants/detail?id=11704746", x: 126.9282765, y: 37.4876462},
@@ -41,22 +42,33 @@
     getData();
 
     function getData(){
+      var bounds = map.getBounds()
+      var max=bounds._max
+      var min=bounds._min
+
       $.ajax({
         url:'/map_data',
         type:'POST',
         dataType:'json',
-        data:{authenticity_token:$("[name='csrf-token']").attr('content')},
+        data:{
+          max:JSON.stringify(max),
+          min:JSON.stringify(min),
+          authenticity_token:$("[name='csrf-token']").attr('content'),
+          indices:JSON.stringify(indices)},
         success: function(result){
-          data=result;
-          alert("success!!");
-          console.log(data);
-          createElements();
-        }
-      });
-    };
+                  data = result[0]; //새로 로딩된 학교들의 데이터, 기존에는 없던 학교들만 있음!
+                  indices = indices.concat(result[1]) //새로 로딩된 학교들의 아이디
+                  alert("success!!");
+                  console.log(data);
+                  createElements();
+                          }
+              });
+        };
 
     function createElements(){
       alert("create!")
+      var new_markers=[];
+      var new_infoWindows=[];
       for(var i=0; i<data.length; i++){
       // restaurant=data[i]
       var school=data[i]
@@ -86,16 +98,20 @@
       var infoWindow=new naver.maps.InfoWindow({
         content: contentString
       });
+
+    new_markers.push(marker);
+    new_infoWindows.push(infoWindows);
+
       markers.push(marker)
       infoWindows.push(infoWindow)
-    }
-      addEvents();
-};
+      }
+      addEvents(new_markers,new_infoWindows);
+      };
 
-    function getClickHandler(seq) {
+    function getClickHandler(new_markers,new_infoWindows,seq) {
       return function(e) {
-      var marker = markers[seq],
-          infoWindow = infoWindows[seq];
+      var marker = new_markers[seq],
+          infoWindow = new_infoWindows[seq];
 
       if (infoWindow.getMap()) { //정보가 맵에 표시되어 있는지
           infoWindow.close();
@@ -106,16 +122,17 @@
     }
 
 
-    function addEvents(){
+    function addEvents(new_markers,new_infoWindows){
       alert("event!")
-      for (var i=0, ii=markers.length; i<ii; i++) {
-        N.Event.addListener(markers[i], 'click', getClickHandler(i));
+      for (var i=0, ii=new_markers.length; i<ii; i++) {
+        N.Event.addListener(new_markers[i], 'click', getClickHandler(new_markers,new_infoWindows,i));
       }
+        updateMarkers(map, markers); //로딩 후 로딩 자리옮김
     };
 
     //여기서부터 마커 지도 보이는 부분만띄우기
     naver.maps.Event.addListener(map, 'idle', function() {
-    updateMarkers(map, markers);
+    getData();  //로딩 후 로딩
     });
 
     function updateMarkers(map, markers) {
