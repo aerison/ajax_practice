@@ -8,6 +8,9 @@ class PostsController < ApplicationController
     @post = Post.new    #new action 에서 데려옴
   end
 
+  def map
+  end
+
   # GET /posts/1
   # GET /posts/1.json
   def show
