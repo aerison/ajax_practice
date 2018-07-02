@@ -1,0 +1,12 @@
+
+
+//index에서 옴 ``줄바꿈 무시 한문자열로 받아줌
+var new_post=`<tr>
+  <td><%= @post.title %></td>
+  <td><%= @post.content %></td>
+  <td><%= link_to 'Show', @post %></td>
+  <td><%= link_to 'Edit', edit_post_path(@post) %></td>
+  <td><%= link_to 'Destroy', @post, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+</tr>`;
+
+$('tbody').append(new_post);
